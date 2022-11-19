@@ -7,6 +7,7 @@
 #include "SFML/Graphics.hpp"
 
 class Object;
+struct Layer;
 
 
 class Engine
@@ -25,6 +26,7 @@ private:
 
     sf::RenderWindow* _Window;
     std::vector<Object*> _Objects;
+    std::vector<Layer> _Layers;
 };
 
 #endif // !Engine_h_

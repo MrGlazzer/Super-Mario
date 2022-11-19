@@ -3,6 +3,7 @@
 
 #include "Engine.h"
 #include "Sources/Objects/Mario/Mario.h"
+#include "Sources/Map/MapMgr.h"
 
 
 Engine::Engine() : _Window(nullptr)
@@ -18,6 +19,11 @@ Engine::Engine() : _Window(nullptr)
     }
 
     _Objects.push_back(mario);
+    _Layers = sMapMgr->CreateMap(
+        "E:/Learning/SFML/Super-Mario/Resources/Map/Map.tmx",
+        "E:/Learning/SFML/Super-Mario/Resources/Map/Tiles.tsx",
+        "E:/Learning/SFML/Super-Mario/Resources/Images/Map/Map.png"
+    );
 }
 
 Engine::~Engine()
@@ -59,7 +65,15 @@ void Engine::HandleEvents()
 void Engine::Render(float diff)
 {
     _Window->clear();
-    for (const auto& object : _Objects)
-        object->Draw(_Window, diff);
+
+    for (auto layer : _Layers)
+    {
+        for (auto sprite : layer.Objects)
+            _Window->draw(sprite);
+    }
+
+    /*for (const auto& object : _Objects)
+        object->Draw(_Window, diff);*/
+
     _Window->display();
 }
