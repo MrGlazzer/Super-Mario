@@ -26,7 +26,7 @@ bool Object::Create(std::string path, ObjectType type)
                 return false;
 
             _Sprite.setTexture(_Texture);
-            CreateAnimations(_Texture, _AnimationHandler);
+            CreateAnimations(_AnimationHandler);
             return true;
         }
     }
@@ -39,5 +39,6 @@ void Object::Draw(sf::RenderTarget* target, float diff)
     if (!target)
         return;
 
-    _AnimationHandler.Update(target, diff, _Sprite.getGlobalBounds().left, _Sprite.getGlobalBounds().top);
+    TryMove(diff);
+    _AnimationHandler.Update(target, diff, _Position.x, _Position.y);
 }

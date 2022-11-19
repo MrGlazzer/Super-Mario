@@ -13,7 +13,9 @@ public:
     explicit Mario();
     ~Mario();
 
-    void CreateAnimations(const sf::Texture& trxture, AnimationHandler& handler) override;
+    void CreateAnimations(AnimationHandler& handler) override;
+
+    void TryMove(float diff) override;
 
 private:
     //<

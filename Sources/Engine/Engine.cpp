@@ -7,10 +7,10 @@
 
 Engine::Engine() : _Window(nullptr)
 {
-    _Window = new sf::RenderWindow(sf::VideoMode(1024, 720), "Super Mario!", (sf::Style::Titlebar | sf::Style::Close));
+    _Window = new sf::RenderWindow(sf::VideoMode(320, 240), "Super Mario!");
 
     auto mario = new Mario();
-    if (!mario->Create("E:/Learning/SFML/Super-Mario/Resources/Images/wolf.png", ObjectType::OBJECT_MARIO))
+    if (!mario->Create("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioIdle.png", ObjectType::OBJECT_MARIO))
     {
         delete mario;
         exit(0);
