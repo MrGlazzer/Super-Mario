@@ -13,6 +13,8 @@ public:
     explicit Mario();
     ~Mario();
 
+    void CreateAnimations(const sf::Texture& trxture, AnimationHandler& handler) override;
+
 private:
     //<
 };

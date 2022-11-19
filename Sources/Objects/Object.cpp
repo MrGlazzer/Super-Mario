@@ -22,10 +22,11 @@ bool Object::Create(std::string path, ObjectType type)
     {
         case ObjectType::OBJECT_MARIO:
         {
-            if (!_Texture.loadFromFile(path, sf::IntRect()))
+            if (!_Texture.loadFromFile(path))
                 return false;
 
             _Sprite.setTexture(_Texture);
+            CreateAnimations(_Texture, _AnimationHandler);
             return true;
         }
     }
@@ -33,7 +34,10 @@ bool Object::Create(std::string path, ObjectType type)
     return false;
 }
 
-void Object::Draw(sf::RenderTarget* target)
+void Object::Draw(sf::RenderTarget* target, float diff)
 {
-    target->draw(_Sprite);
+    if (!target)
+        return;
+
+    _AnimationHandler.Update(target, diff, _Sprite.getGlobalBounds().left, _Sprite.getGlobalBounds().top);
 }

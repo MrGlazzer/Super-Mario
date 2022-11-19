@@ -3,36 +3,39 @@
 
 #include "Engine.h"
 #include "Sources/Objects/Mario/Mario.h"
-#include <iostream>
 
 
-Engine::Engine() : _Window(nullptr), _Mario(nullptr)
+Engine::Engine() : _Window(nullptr)
 {
     _Window = new sf::RenderWindow(sf::VideoMode(1024, 720), "Super Mario!", (sf::Style::Titlebar | sf::Style::Close));
 
-    _Mario = new Mario();
-    if (!_Mario->Create("E:/Learning/SFML/Super-Mario/Resources/Images/wolf.jpg", ObjectType::OBJECT_MARIO))
+    auto mario = new Mario();
+    if (!mario->Create("E:/Learning/SFML/Super-Mario/Resources/Images/wolf.png", ObjectType::OBJECT_MARIO))
     {
-        delete _Mario;
-        _Mario = nullptr;
+        delete mario;
+        exit(0);
+        return;
     }
+
+    _Objects.push_back(mario);
 }
 
 Engine::~Engine()
 {
-    if (_Window)
-        delete _Window;
+    delete _Window;
     _Window = nullptr;
 
-    if (_Mario)
-        delete _Mario;
-    _Mario = nullptr;
+    while (!_Objects.empty())
+    {
+        delete _Objects.back();
+        _Objects.pop_back();
+    }
 }
 
-void Engine::Update(sf::Int32 diff)
+void Engine::Update(float diff)
 {
     HandleEvents();
-    Render();
+    Render(diff);
 }
 
 void Engine::HandleEvents()
@@ -53,10 +56,10 @@ void Engine::HandleEvents()
     }
 }
 
-void Engine::Render()
+void Engine::Render(float diff)
 {
     _Window->clear();
-    if (_Mario)
-        _Mario->Draw(_Window);
+    for (const auto& object : _Objects)
+        object->Draw(_Window, diff);
     _Window->display();
 }

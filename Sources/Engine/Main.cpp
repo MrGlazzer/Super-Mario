@@ -2,6 +2,8 @@
 */
 
 #include "Engine.h"
+#include <chrono>
+#include <iostream>
 
 
 int main()
@@ -16,12 +18,7 @@ int main()
 
     sf::Clock clock;
     while (engine->IsRunable())
-    {
-        auto diff = clock.getElapsedTime();
-        clock.restart();
-
-        engine->Update(diff.asMilliseconds());
-    }
+        engine->Update(clock.restart().asSeconds());
 
     delete engine;
     engine = nullptr;

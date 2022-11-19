@@ -6,7 +6,7 @@
 
 #include "SFML/Graphics.hpp"
 
-class Mario;
+class Object;
 
 
 class Engine
@@ -17,14 +17,14 @@ public:
 
     [[nodiscard]] bool IsRunable() const { return _Window && _Window->isOpen(); }
 
-    void Update(sf::Int32 diff);
+    void Update(float diff);
 
 private:
     void HandleEvents();
-    void Render();
+    void Render(float diff);
 
     sf::RenderWindow* _Window;
-    Mario* _Mario;
+    std::vector<Object*> _Objects;
 };
 
 #endif // !Engine_h_
