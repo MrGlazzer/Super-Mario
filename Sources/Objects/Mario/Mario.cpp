@@ -1,43 +1,16 @@
 /*
+* Glazzer
 */
 
 #include "Mario.h"
 
 
-Mario::Mario()
+Mario::Mario() {}
+
+Mario::~Mario() {}
+
+void Mario::Update(float diff)
 {
-}
-
-Mario::~Mario()
-{
-}
-
-void Mario::CreateAnimations(AnimationHandler& handler)
-{
-    sf::Texture texture;
-    texture.loadFromFile("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioIdle.png");
-    handler.PushAnimation(AnimationType::ANIMATION_IDLE, Animation(texture, sf::IntRect(0, 0, 16, 16), 0.f, false));
-
-    texture.loadFromFile("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioWalk.png");
-    handler.PushAnimation(AnimationType::ANIMATION_WALK, Animation(texture, sf::IntRect(0, 0, 16, 16), 10.f, true));
-
-    texture.loadFromFile("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioJump.png");
-    handler.PushAnimation(AnimationType::ANIMATION_JUMP, Animation(texture, sf::IntRect(0, 0, 16, 16), 0.f, false));
-
-    texture.loadFromFile("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioDeath.png");
-    handler.PushAnimation(AnimationType::ANIMATION_DEATH, Animation(texture, sf::IntRect(0, 0, 16, 16), 0.f, false));
-
-    texture.loadFromFile("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioBrake.png");
-    handler.PushAnimation(AnimationType::ANIMATION_BRAKE, Animation(texture, sf::IntRect(0, 0, 16, 16), 0.f, true));
-
-    handler.Idle();
-}
-
-void Mario::TryMove(float diff)
-{
-    auto dir = 0.f;
-    auto isMoved = false;
-
     auto IsLeft = []()-> bool
     {
         return sf::Keyboard::isKeyPressed(sf::Keyboard::Left) || sf::Keyboard::isKeyPressed(sf::Keyboard::A);
@@ -48,6 +21,14 @@ void Mario::TryMove(float diff)
         return sf::Keyboard::isKeyPressed(sf::Keyboard::Right) || sf::Keyboard::isKeyPressed(sf::Keyboard::D);
     };
 
+    auto IsUp = []()-> bool
+    {
+        return sf::Keyboard::isKeyPressed(sf::Keyboard::Up) || sf::Keyboard::isKeyPressed(sf::Keyboard::W) || sf::Keyboard::isKeyPressed(sf::Keyboard::Space);
+    };
+
+    auto dir = 0.f;
+    auto isMoved = false;
+
     if (IsLeft() || IsRight())
     {
         isMoved = !(IsLeft() && IsRight());
@@ -55,18 +36,27 @@ void Mario::TryMove(float diff)
             dir = IsRight() ? 1.f : -1.f;
     }
 
-    /*auto isJumped = false;
-    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+    SetIgnoreCollision(false);
+    if (IsUp() && !IsFalling() && !IsJumped())
     {
-    }*/
+        isMoved = true;
 
-    if (isMoved)
-    {
-        SetPosition(Position(GetPositionX() + diff * 48.f * dir, GetPositionY(), GetPositionZ()));
-        GetAnimationHandler().Walk(dir < 0.f);
+        SetJumped();
+        SetFalling(-0.09f);
+        SetIgnoreCollision(true);
+        GetAnimationHandler().Jump(GetHorizontalImpulse() <= 0.f);
     }
-    else
+
+    if (!IsFalling() && !IsJumped())
     {
-        GetAnimationHandler().Idle();
+        if (isMoved)
+        {
+            SetHorizontalImpulse(dir > 0.f ? 0.03f : -0.03f);
+            GetAnimationHandler().Walk(dir < 0.f);
+        }
+        else
+        {
+            GetAnimationHandler().Idle();
+        }
     }
 }

@@ -1,4 +1,5 @@
 /*
+* Glazzer
 */
 
 #ifndef Mario_h_
@@ -13,9 +14,7 @@ public:
     explicit Mario();
     ~Mario();
 
-    void CreateAnimations(AnimationHandler& handler) override;
-
-    void TryMove(float diff) override;
+    void Update(float diff) override;
 
 private:
     //<

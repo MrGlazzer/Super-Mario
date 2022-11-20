@@ -1,13 +1,13 @@
 /*
+* Glazzer
 */
 
 #ifndef Engine_h_
 #define Engine_h_
 
-#include "SFML/Graphics.hpp"
+#include "Sources/Utils/Global.hpp"
 
-class Object;
-struct Layer;
+class Map;
 
 
 class Engine
@@ -25,8 +25,7 @@ private:
     void Render(float diff);
 
     sf::RenderWindow* _Window;
-    std::vector<Object*> _Objects;
-    std::vector<Layer> _Layers;
+    Map* _Map;
 };
 
 #endif // !Engine_h_

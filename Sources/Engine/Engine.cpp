@@ -1,41 +1,22 @@
 /*
+* Glazzer
 */
 
 #include "Engine.h"
-#include "Sources/Objects/Mario/Mario.h"
-#include "Sources/Map/MapMgr.h"
+#include "Sources/Map/Map.h"
+#include "Sources/LevelMgr/LevelMgr.h"
 
 
-Engine::Engine() : _Window(nullptr)
+Engine::Engine()
 {
-    _Window = new sf::RenderWindow(sf::VideoMode(320, 240), "Super Mario!");
-
-    auto mario = new Mario();
-    if (!mario->Create("E:/Learning/SFML/Super-Mario/Resources/Images/Mario/MarioIdle.png", ObjectType::OBJECT_MARIO))
-    {
-        delete mario;
-        exit(0);
-        return;
-    }
-
-    _Objects.push_back(mario);
-    _Layers = sMapMgr->CreateMap(
-        "E:/Learning/SFML/Super-Mario/Resources/Map/Map.tmx",
-        "E:/Learning/SFML/Super-Mario/Resources/Map/Tiles.tsx",
-        "E:/Learning/SFML/Super-Mario/Resources/Images/Map/Map.png"
-    );
+    _Window = new sf::RenderWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Super Mario!");
+    _Map = sLevelMgr->CreateLevelMap(0);
 }
 
 Engine::~Engine()
 {
     delete _Window;
     _Window = nullptr;
-
-    while (!_Objects.empty())
-    {
-        delete _Objects.back();
-        _Objects.pop_back();
-    }
 }
 
 void Engine::Update(float diff)
@@ -46,15 +27,15 @@ void Engine::Update(float diff)
 
 void Engine::HandleEvents()
 {
-    sf::Event e;
-    while (_Window->pollEvent(e))
+    sf::Event event;
+    while (_Window->pollEvent(event))
     {
-        switch (e.type)
+        switch (event.type)
         {
             case sf::Event::Closed:
             case sf::Event::KeyPressed:
             {
-                if (e.type == sf::Event::Closed || e.key.code && e.key.code == sf::Keyboard::Escape)
+                if (event.type == sf::Event::Closed || event.key.code == sf::Keyboard::Escape)
                     _Window->close();
                 break;
             }
@@ -65,15 +46,7 @@ void Engine::HandleEvents()
 void Engine::Render(float diff)
 {
     _Window->clear();
-
-    for (auto layer : _Layers)
-    {
-        for (auto sprite : layer.Objects)
-            _Window->draw(sprite);
-    }
-
-    /*for (const auto& object : _Objects)
-        object->Draw(_Window, diff);*/
-
+    if (_Map)
+        _Map->Draw(_Window, diff);
     _Window->display();
 }

@@ -13,27 +13,35 @@ MACRO( auto_group ProjectDirectory ProjectSources )
     ENDFOREACH( Source )
 ENDMACRO( auto_group )
 
-file(GLOB_RECURSE sources_objects Objects/*.h Objects/*.hpp Objects/*.cpp)
-file(GLOB_RECURSE sources_map Map/*.h Map/*.hpp Map/*.cpp)
 file(GLOB_RECURSE sources_utils Utils/*.h Utils/*.hpp Utils/*.cpp)
+file(GLOB_RECURSE sources_map Map/*.h Map/*.hpp Map/*.cpp)
+file(GLOB_RECURSE sources_levelmgr LevelMgr/*.h LevelMgr/*.hpp LevelMgr/*.cpp)
+file(GLOB_RECURSE sources_objects Objects/*.h Objects/*.hpp Objects/*.cpp)
+file(GLOB_RECURSE sources_handlers Handlers/*.h Handlers/*.hpp Handlers/*.cpp)
 file(GLOB_RECURSE sources_engine Engine/*.h Engine/*.hpp Engine/*.cpp)
 
 set(sources
     ${sources}
-    ${sources_objects}
-    ${sources_map}
     ${sources_utils}
+    ${sources_map}
+    ${sources_levelmgr}
+    ${sources_objects}
+    ${sources_handlers}
     ${sources_engine}
 )
 
 include_directories(
     ${CMAKE_SOURCE_DIR}
-    ${CMAKE_SOURCE_DIR}/Objects
-    ${CMAKE_SOURCE_DIR}/Objects/Enemies
-    ${CMAKE_SOURCE_DIR}/Objects/Mario
-    ${CMAKE_SOURCE_DIR}/Map
     ${CMAKE_SOURCE_DIR}/Utils
     ${CMAKE_SOURCE_DIR}/Utils/TinyXML
+    ${CMAKE_SOURCE_DIR}/Map
+    ${CMAKE_SOURCE_DIR}/LevelMgr
+    ${CMAKE_SOURCE_DIR}/Objects
+    ${CMAKE_SOURCE_DIR}/Objects/Mario
+    ${CMAKE_SOURCE_DIR}/Objects/Enemies
+    ${CMAKE_SOURCE_DIR}/Objects/Enemies/Goomba
+    ${CMAKE_SOURCE_DIR}/Handlers
+    ${CMAKE_SOURCE_DIR}/Handlers/AnimationHandler
     ${CMAKE_SOURCE_DIR}/Engine
 )
 
