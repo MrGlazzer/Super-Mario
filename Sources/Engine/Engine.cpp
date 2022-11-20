@@ -10,6 +10,8 @@
 Engine::Engine()
 {
     _Window = new sf::RenderWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Super Mario!");
+    _Camera.reset(sf::FloatRect(0.f, 0.f, SCREEN_WIDTH, SCREEN_HEIGHT));
+
     _Map = sLevelMgr->CreateLevelMap(0);
 }
 
@@ -45,8 +47,14 @@ void Engine::HandleEvents()
 
 void Engine::Render(float diff)
 {
-    _Window->clear();
+    if (_Map)
+        _Camera.reset(sf::FloatRect(_Map->GetCameraOffsetX(), 0.f, SCREEN_WIDTH, SCREEN_HEIGHT));
+
+    _Window->setView(_Camera);
+    _Window->clear(sf::Color(0, 219, 255));
+
     if (_Map)
         _Map->Draw(_Window, diff);
+
     _Window->display();
 }

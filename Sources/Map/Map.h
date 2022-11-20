@@ -25,10 +25,10 @@ struct ObjectInfo
 {
     ObjectInfo() = default;
 
-    std::string Name;
     Position PositionOnMap;
     sf::Uint32 Width = 0;
     sf::Uint32 Height = 0;
+    ObjectType Type;
 };
 
 class Map
@@ -48,7 +48,11 @@ public:
     std::vector<TileInfo>& GetTiles() { return _Tiles; }
 
     void CreateObjects();
-    std::vector<ObjectInfo> GetObject(std::string name);
+    std::vector<ObjectInfo> GetObject(ObjectType type);
+    std::vector<ObjectInfo> GetObject() { return _ObjectInfos; }
+
+    void SetCameraOffsetX(float value) { _CameraOffsetX = value; }
+    float GetCameraOffsetX() const { return _CameraOffsetX; }
 
     void Draw(sf::RenderTarget* target, float diff);
 
@@ -57,6 +61,7 @@ private:
     sf::Uint32 _Height;
     sf::Uint32 _TileWidth;
     sf::Uint32 _TileHeight;
+    float _CameraOffsetX;
     std::vector<TileInfo> _Tiles;
     std::vector<ObjectInfo> _ObjectInfos;
     std::vector<Object*> _Objects;

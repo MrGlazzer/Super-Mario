@@ -44,11 +44,13 @@ bool Object::IsCollision()
     if (!map)
         return false;
 
-    auto collisions = map->GetObject("Collision");
-    for (const auto& collision : collisions)
+    auto objects = map->GetObject(ObjectType::OBJECT_COLLISION_ROOM);
+    for (const auto& object : objects)
     {
-        if (collision.PositionOnMap.Y <= GetPositionY() + CELL_SIZE)
-            return collision.Width >= GetPositionX();
+
+
+        if (object.PositionOnMap.Y <= GetPositionY() + CELL_SIZE)
+            return true;
     }
 
     return false;
@@ -90,5 +92,12 @@ void Object::Draw(sf::RenderTarget* target, float diff)
 
     _Position.Y += _FallingImpulse;
     _Position.X += _HorizontalImpulse;
+
+    if (auto map = GetMap())
+    {
+        _Position.X = clamp(_Position.X, 0.f, std::min(_Position.X, (map->GetWidth() - 1) * (float)CELL_SIZE));
+        //<
+    }
+
     _AnimationHandler.Update(target, diff, _Position);
 }

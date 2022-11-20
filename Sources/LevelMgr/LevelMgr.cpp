@@ -19,7 +19,7 @@ LevelMgr* LevelMgr::Instance()
 
 Map* LevelMgr::CreateLevelMap(sf::Uint16 level)
 {
-    auto ParseXML = [](std::string path, Map* map, bool isMap)-> void
+    auto ParseXML = [&](std::string path, Map* map, bool isMap, bool tileOnMapXML = false)-> bool
     {
         tinyxml2::XMLDocument xml;
         xml.LoadFile(path.c_str());
@@ -28,13 +28,9 @@ Map* LevelMgr::CreateLevelMap(sf::Uint16 level)
         {
             auto el_map = xml.FirstChildElement("map");
             if (!el_map)
-                return;
+                return false;
 
             map->Initialization(atoi(el_map->Attribute("width")), atoi(el_map->Attribute("height")), atoi(el_map->Attribute("tilewidth")), atoi(el_map->Attribute("tileheight")));
-
-            auto el_tileset = el_map->FirstChildElement("tileset");
-            if (!el_tileset)
-                return;
 
             auto el_layer = el_map->FirstChildElement("layer");
             while (el_layer)
@@ -87,13 +83,23 @@ Map* LevelMgr::CreateLevelMap(sf::Uint16 level)
                 while (el_data)
                 {
                     ObjectInfo object;
-                    object.Name = el_data->Attribute("name");
+                    if (auto name = el_data->Attribute("name"))
+                        object.Type = GetObjectType(name);
+
                     object.PositionOnMap.X = (float)atoi(el_data->Attribute("x"));
-                    object.PositionOnMap.Y = (float)atoi(el_data->Attribute("y"));
+                    object.PositionOnMap.Y = (float)atoi(el_data->Attribute("y")) - (float)CELL_SIZE;
                     object.Width = atoi(el_data->Attribute("width"));
                     object.Height = atoi(el_data->Attribute("height"));
-                    map->AddObjectInfo(object);
 
+                    if (auto el_gid = el_data->Attribute("gid"))
+                    {
+                        TileInfo tile;
+                        tile.ID = atoi(el_gid);
+                        tile.PositionOnMap = object.PositionOnMap;
+                        map->AddTile(tile);
+                    }
+
+                    map->AddObjectInfo(object);
                     el_data = el_data->NextSiblingElement("object");
                 }
 
@@ -102,9 +108,22 @@ Map* LevelMgr::CreateLevelMap(sf::Uint16 level)
         }
         else
         {
-            auto el_tileset = xml.FirstChildElement("tileset");
+            tinyxml2::XMLElement* el_tileset = nullptr;
+            if (tileOnMapXML)
+            {
+                auto el_map = xml.FirstChildElement("map");
+                if (!el_map)
+                    return false;
+
+                el_tileset = el_map->FirstChildElement("tileset");
+            }
+            else
+            {
+                el_tileset = xml.FirstChildElement("tileset");
+            }
+
             if (!el_tileset)
-                return;
+                return false;
 
             auto tileWidth = atoi(el_tileset->Attribute("tilewidth"));
             auto tileHeight = atoi(el_tileset->Attribute("tileheight"));
@@ -134,6 +153,8 @@ Map* LevelMgr::CreateLevelMap(sf::Uint16 level)
                 position.Y += tileHeight + spacing;
             }
         }
+
+        return true;
     };
 
     std::string path = "E:/Learning/SFML/Super-Mario/Assets/Levels/" + std::to_string(level) + "/";
@@ -142,7 +163,23 @@ Map* LevelMgr::CreateLevelMap(sf::Uint16 level)
 
     auto map = new Map();
     ParseXML(pathToXMLMap, map, true);
-    ParseXML(pathToXMLTiles, map, false);
+    if (!ParseXML(pathToXMLMap, map, false, true))
+        ParseXML(pathToXMLTiles, map, false, false);
+
     map->CreateObjects();
     return map;
+}
+
+ObjectType LevelMgr::GetObjectType(const std::string& name)
+{
+    if (name == "collision_floor")
+    {
+        return ObjectType::OBJECT_COLLISION_ROOM;
+    }
+    else if (name == "mario")
+    {
+        return ObjectType::OBJECT_MARIO;
+    }
+
+    return ObjectType();
 }

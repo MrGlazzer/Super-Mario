@@ -44,7 +44,7 @@ void Mario::Update(float diff)
         SetJumped();
         SetFalling(-0.09f);
         SetIgnoreCollision(true);
-        GetAnimationHandler().Jump(GetHorizontalImpulse() <= 0.f);
+        GetAnimationHandler().Jump(GetHorizontalImpulse() < 0.f);
     }
 
     if (!IsFalling() && !IsJumped())
@@ -58,5 +58,11 @@ void Mario::Update(float diff)
         {
             GetAnimationHandler().Idle();
         }
+    }
+
+    if (auto map = GetMap())
+    {
+        auto offsetX = clamp(GetPositionX() - (float)SCREEN_WIDTH / 2.f, 0.f, (map->GetWidth() * (float)CELL_SIZE) - SCREEN_WIDTH);
+        map->SetCameraOffsetX(offsetX);
     }
 }

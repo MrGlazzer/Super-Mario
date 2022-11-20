@@ -6,7 +6,7 @@
 #include "Sources/Objects/Mario/Mario.h"
 
 
-Map::Map() : _Width(0), _Height(0), _TileWidth(0), _TileHeight(0)
+Map::Map() : _Width(0), _Height(0), _TileWidth(0), _TileHeight(0), _CameraOffsetX(0.f)
 {
     _Texture.loadFromFile("E:/Learning/SFML/Super-Mario/Assets/Textures/Map/Map.png");
 }
@@ -25,7 +25,7 @@ void Map::CreateObjects()
 {
     for (const auto& object : _ObjectInfos)
     {
-        if (object.Name == "Mario")
+        if (object.Type == ObjectType::OBJECT_MARIO)
         {
             auto mario = new Mario();
             mario->Create(ObjectType::OBJECT_MARIO, this, object.PositionOnMap);
@@ -34,12 +34,12 @@ void Map::CreateObjects()
     }
 }
 
-std::vector<ObjectInfo> Map::GetObject(std::string name)
+std::vector<ObjectInfo> Map::GetObject(ObjectType type)
 {
     std::vector<ObjectInfo> result;
     for (const auto& object : _ObjectInfos)
     {
-        if (object.Name == name)
+        if (object.Type == type)
             result.push_back(object);
     }
 

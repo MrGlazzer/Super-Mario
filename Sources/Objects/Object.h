@@ -10,12 +10,6 @@
 #include "Sources/Map/Map.h"
 
 
-enum class ObjectType
-{
-    OBJECT_NONE                         = 0,
-    OBJECT_MARIO
-};
-
 class Object
 {
 public:
@@ -25,6 +19,8 @@ public:
     void Create(ObjectType type, Map* map, const Position& position);
 
     [[nodiscard]] bool IsMario() const { return _Type == ObjectType::OBJECT_MARIO; }
+
+    Mario* ToMario() { if (IsMario()) return reinterpret_cast<Mario*>(this); return nullptr; }
 
     void SetPosition(const Position& position) { _Position = position; }
     Position GetPosition() { return _Position; }

@@ -25,6 +25,7 @@ private:
     void Render(float diff);
 
     sf::RenderWindow* _Window;
+    sf::View _Camera;
     Map* _Map;
 };
 
