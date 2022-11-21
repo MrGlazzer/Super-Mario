@@ -35,8 +35,8 @@ public:
 private:
     /* Move */
     sf::Vector2<float> _Velocity;
-    bool _IsFalling;
     float _JumpTimer;
+    bool _IsImpulse;
 };
 
 #endif // !Mario_h_

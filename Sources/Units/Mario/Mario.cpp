@@ -2,7 +2,7 @@
 #include "Sources/Map/Map.h"
 
 
-Mario::Mario() : _IsFalling(false), _JumpTimer(0.f) {}
+Mario::Mario() : _JumpTimer(0.f), _IsImpulse(false) {}
 
 Mario::~Mario() {}
 
@@ -77,25 +77,26 @@ void Mario::Update(float diff)
             if (sCollisionMgr->IsCollision(GetMap(), temp, { ObjectType::Collision, ObjectType::Block, ObjectType::Pipe }, collisionMask))
             {
                 if (!_Velocity.y)
-                {
                     _Velocity.y = MARIO_JUMP_SPEED;
-                    _JumpTimer = 8.f;
-                }
-            }
-            else if (_JumpTimer > 0.f)
-            {
-                _Velocity.y = MARIO_JUMP_SPEED;
-                _JumpTimer -= 1.f;
             }
             else
             {
                 _Velocity.y = std::min(_Velocity.y + GRAVITY * diff, 8.f);
             }
+
+            if (_JumpTimer > 0.1f && !_IsImpulse)
+            {
+                _IsImpulse = true;
+                _Velocity.y += MARIO_JUMP_SPEED / 1.6f;
+            }
+
+            _JumpTimer += diff;
         }
         else
         {
-            _JumpTimer = 0.f;
             _Velocity.y = std::min(_Velocity.y + GRAVITY * diff, 8.f);
+            _JumpTimer = 0.f;
+            _IsImpulse = false;
         }
 
         temp = GetPosition();
@@ -113,7 +114,6 @@ void Mario::Update(float diff)
                 SetPositionY((float)CELL_SIZE * (ceil((_Velocity.y + GetPositionY()) / (float)CELL_SIZE) - 1.f));
             }
 
-            _JumpTimer = 0.f;
             _Velocity.y = 0.f;
         }
         else
