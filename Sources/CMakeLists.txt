@@ -14,19 +14,21 @@ MACRO( auto_group ProjectDirectory ProjectSources )
 ENDMACRO( auto_group )
 
 file(GLOB_RECURSE sources_utils Utils/*.h Utils/*.hpp Utils/*.cpp)
-file(GLOB_RECURSE sources_map Map/*.h Map/*.hpp Map/*.cpp)
-file(GLOB_RECURSE sources_levelmgr LevelMgr/*.h LevelMgr/*.hpp LevelMgr/*.cpp)
-file(GLOB_RECURSE sources_objects Objects/*.h Objects/*.hpp Objects/*.cpp)
+file(GLOB_RECURSE sources_collision_mgr CollisionMgr/*.h CollisionMgr/*.hpp CollisionMgr/*.cpp)
 file(GLOB_RECURSE sources_handlers Handlers/*.h Handlers/*.hpp Handlers/*.cpp)
+file(GLOB_RECURSE sources_level_mgr LevelMgr/*.h LevelMgr/*.hpp LevelMgr/*.cpp)
+file(GLOB_RECURSE sources_units Units/*.h Units/*.hpp Units/*.cpp)
+file(GLOB_RECURSE sources_map Map/*.h Map/*.hpp Map/*.cpp)
 file(GLOB_RECURSE sources_engine Engine/*.h Engine/*.hpp Engine/*.cpp)
 
 set(sources
     ${sources}
     ${sources_utils}
-    ${sources_map}
-    ${sources_levelmgr}
-    ${sources_objects}
+    ${sources_collision_mgr}
     ${sources_handlers}
+    ${sources_level_mgr}
+    ${sources_units}
+    ${sources_map}
     ${sources_engine}
 )
 
@@ -34,23 +36,21 @@ include_directories(
     ${CMAKE_SOURCE_DIR}
     ${CMAKE_SOURCE_DIR}/Utils
     ${CMAKE_SOURCE_DIR}/Utils/TinyXML
-    ${CMAKE_SOURCE_DIR}/Map
-    ${CMAKE_SOURCE_DIR}/LevelMgr
-    ${CMAKE_SOURCE_DIR}/Objects
-    ${CMAKE_SOURCE_DIR}/Objects/Mario
-    ${CMAKE_SOURCE_DIR}/Objects/Enemies
-    ${CMAKE_SOURCE_DIR}/Objects/Enemies/Goomba
+    ${CMAKE_SOURCE_DIR}/CollisionMgr
     ${CMAKE_SOURCE_DIR}/Handlers
     ${CMAKE_SOURCE_DIR}/Handlers/AnimationHandler
+    ${CMAKE_SOURCE_DIR}/LevelMgr
+    ${CMAKE_SOURCE_DIR}/Units
+    ${CMAKE_SOURCE_DIR}/Units/Mario
+    ${CMAKE_SOURCE_DIR}/Units/Enemies
+    ${CMAKE_SOURCE_DIR}/Units/Enemies/Goomba
+    ${CMAKE_SOURCE_DIR}/Map
     ${CMAKE_SOURCE_DIR}/Engine
 )
 
 auto_group("${CMAKE_CURRENT_SOURCE_DIR}" "${sources}")
-
-# Define our target executable based on the source files above
 add_executable(SuperMario ${sources})
 
-# Link our executable to SFML and its dependencies
 target_link_libraries(SuperMario
     sfml-audio
     sfml-graphics

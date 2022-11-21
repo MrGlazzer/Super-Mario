@@ -1,17 +1,30 @@
-/*
-* Glazzer
-*/
-
 #include "Map.h"
-#include "Sources/Objects/Mario/Mario.h"
+#include "Sources/Units/Mario/Mario.h"
 
 
-Map::Map() : _Width(0), _Height(0), _TileWidth(0), _TileHeight(0), _CameraOffsetX(0.f)
+Map::Map() : _Width(0), _Height(0), _TileWidth(0), _TileHeight(0), _CameraOffsetX(0.f), _GridObjects(nullptr)
 {
     _Texture.loadFromFile("E:/Learning/SFML/Super-Mario/Assets/Textures/Map/Map.png");
 }
 
-Map::~Map() {}
+Map::~Map()
+{
+    while (!_Tiles.empty())
+    {
+        delete _Tiles.back();
+        _Tiles.pop_back();
+    }
+
+    for (auto x = 0u; x < _Width; ++x)
+        delete _GridObjects[x];
+    delete _GridObjects;
+
+    while (!_Units.empty())
+    {
+        delete _Units.back();
+        _Units.pop_back();
+    }   
+}
 
 void Map::Initialization(sf::Uint32 width, sf::Uint32 height, sf::Uint32 tileWidth, sf::Uint32 tileHeight)
 {
@@ -19,31 +32,40 @@ void Map::Initialization(sf::Uint32 width, sf::Uint32 height, sf::Uint32 tileWid
     _Height = height;
     _TileWidth = tileWidth;
     _TileHeight = tileHeight;
+
+    _GridObjects = new GridObject**[width];
+    for (auto x = 0u; x < width; ++x)
+    {
+        _GridObjects[x] = new GridObject*[height];
+
+        for (auto y = 0u; y < height; ++y)
+            _GridObjects[x][y] = nullptr;
+    }
 }
 
-void Map::CreateObjects()
+void Map::AddGridObject(GridObject* object, sf::Vector2<int> position)
 {
-    for (const auto& object : _ObjectInfos)
+    if (!object || position.x > (int)_Width || position.y > (int)_Height)
+        return;
+
+    _GridObjects[position.x][position.y] = object;
+}
+
+void Map::CreateUnits()
+{
+    for (auto x = 0u; x < _Width; ++x)
     {
-        if (object.Type == ObjectType::OBJECT_MARIO)
+        for (auto y = 0u; y < _Height; ++y)
         {
+            auto gridObject = _GridObjects[x][y];
+            if (!gridObject || gridObject->Type != ObjectType::Mario)
+                continue;
+
             auto mario = new Mario();
-            mario->Create(ObjectType::OBJECT_MARIO, this, object.PositionOnMap);
-            _Objects.push_back(mario);
+            mario->Create(this, ObjectType::Mario, gridObject->Position);
+            _Units.push_back(mario);
         }
     }
-}
-
-std::vector<ObjectInfo> Map::GetObject(ObjectType type)
-{
-    std::vector<ObjectInfo> result;
-    for (const auto& object : _ObjectInfos)
-    {
-        if (object.Type == type)
-            result.push_back(object);
-    }
-
-    return result;
 }
 
 void Map::Draw(sf::RenderTarget* target, float diff)
@@ -51,15 +73,15 @@ void Map::Draw(sf::RenderTarget* target, float diff)
     if (!target)
         return;
 
-    for (const auto& tile : _Tiles)
+    for (auto tile : _Tiles)
     {
         sf::Sprite sprite;
         sprite.setTexture(_Texture);
-        sprite.setTextureRect(sf::IntRect((int)tile.TextureRect.X, (int)tile.TextureRect.Y, _TileWidth, _TileHeight));
-        sprite.setPosition(tile.PositionOnMap.X, tile.PositionOnMap.Y);
+        sprite.setTextureRect(sf::IntRect(tile->TextureRect.x, tile->TextureRect.y, _TileWidth, _TileHeight));
+        sprite.setPosition(tile->Position);
         target->draw(sprite);
     }
 
-    for (auto object : _Objects)
-        object->Draw(target, diff);
+    for (auto unit : _Units)
+        unit->Draw(target, diff);
 }

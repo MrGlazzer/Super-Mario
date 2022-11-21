@@ -1,14 +1,10 @@
-/*
-* Glazzer
-*/
-
 #ifndef LevelMgr_h_
 #define LevelMgr_h_
 
-#include "Sources/Utils/Global.hpp"
+#include "Sources/Utils/Globals.h"
 
 class Map;
-enum class ObjectType;
+
 
 class LevelMgr
 {
@@ -19,7 +15,7 @@ protected:
 public:
     static LevelMgr* Instance();
 
-    Map* CreateLevelMap(sf::Uint16 level);
+    Map* LoadMap(sf::Uint8 level);
 
 private:
     ObjectType GetObjectType(const std::string& name);

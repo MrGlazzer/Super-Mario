@@ -1,7 +1,3 @@
-/*
-* Glazzer
-*/
-
 #include "Engine.h"
 #include <chrono>
 

@@ -1,7 +1,3 @@
-/*
-* Glazzer
-*/
-
 #include "Engine.h"
 #include "Sources/Map/Map.h"
 #include "Sources/LevelMgr/LevelMgr.h"
@@ -11,14 +7,16 @@ Engine::Engine()
 {
     _Window = new sf::RenderWindow(sf::VideoMode(SCREEN_WIDTH, SCREEN_HEIGHT), "Super Mario!");
     _Camera.reset(sf::FloatRect(0.f, 0.f, SCREEN_WIDTH, SCREEN_HEIGHT));
-
-    _Map = sLevelMgr->CreateLevelMap(0);
+    _Map = sLevelMgr->LoadMap(0);
 }
 
 Engine::~Engine()
 {
     delete _Window;
     _Window = nullptr;
+
+    delete _Map;
+    _Map = nullptr;
 }
 
 void Engine::Update(float diff)

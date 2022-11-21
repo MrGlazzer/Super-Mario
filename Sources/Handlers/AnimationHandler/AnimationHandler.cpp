@@ -1,11 +1,7 @@
-/*
-* Glazzer
-*/
-
 #include "AnimationHandler.h"
 
 
-void Animation::Draw(sf::RenderTarget* target, float diff, Position position, bool isFlipped)
+void Animation::Draw(sf::RenderTarget* target, float diff, sf::Vector2<float> position, bool isFlipped)
 {
     if (!target)
         return;
@@ -15,48 +11,53 @@ void Animation::Draw(sf::RenderTarget* target, float diff, Position position, bo
 
     Sprite.setTexture(Texture);
     Sprite.setTextureRect(Frames[isFlipped][(sf::Int16)CurrentFrame]);
-    Sprite.setPosition(round(position.X), round(position.Y));
+    Sprite.setPosition(position);
     target->draw(Sprite);
 }
 
 
-AnimationHandler::AnimationHandler() {}
+AnimationHandler::AnimationHandler() : CurrentAnimation(AnimationType::None), IsFlipped(false) {}
 
-AnimationHandler::~AnimationHandler() {}
-
-void AnimationHandler::AddAnimation(const sf::Texture& texture, AnimationType type, Position begin, Position end, int width, int height, float speed, bool isNeedFlip)
+AnimationHandler::~AnimationHandler()
 {
-    Animation animation;
-    animation.Texture = texture;
-    animation.Speed = speed;
+    for (const auto& itr : Animations)
+        delete itr.second;
+    Animations.clear();
+}
 
-    while (begin.X < end.X)
+void AnimationHandler::AddAnimation(const sf::Texture& texture, AnimationType type, sf::Vector2<int> begin, sf::Vector2<int> end, int width, int height, float speed, bool isNeedFlip)
+{
+    auto animation = new Animation();
+    animation->Texture = texture;
+    animation->Speed = speed;
+
+    while (begin.x < end.x)
     {
-        animation.Frames[0].push_back(sf::IntRect((int)begin.X, (int)begin.Y, width, height));
+        animation->Frames[0].push_back(sf::IntRect(begin.x, begin.y, width, height));
         if (isNeedFlip)
-            animation.Frames[1].push_back(sf::IntRect((int)begin.X + width, (int)begin.Y, -width, height));
+            animation->Frames[1].push_back(sf::IntRect(begin.x + width, begin.y, -width, height));
 
-        animation.FrameCount += 1.f;
-        begin.X += (float)width;
+        animation->FrameCount += 1.f;
+        begin.x += width;
     }
 
     Animations[type] = animation;
 }
 
-void AnimationHandler::Update(sf::RenderTarget* target, float diff, Position position)
+void AnimationHandler::Update(sf::RenderTarget* target, float diff, sf::Vector2<float> position)
 {
-    if (CurrentAnimation == AnimationType::ANIMATION_NONE || Animations.find(CurrentAnimation) == Animations.end())
+    if (CurrentAnimation == AnimationType::None || Animations.find(CurrentAnimation) == Animations.end())
         return;
 
     switch (CurrentAnimation)
     {
-        case AnimationType::ANIMATION_IDLE:
-        case AnimationType::ANIMATION_DEATH:
+        case AnimationType::Idle:
+        case AnimationType::Death:
         {
             IsFlipped = false;
             break;
         }
     }
 
-    Animations[CurrentAnimation].Draw(target, diff, position, IsFlipped);
+    Animations[CurrentAnimation]->Draw(target, diff, position, IsFlipped);
 }

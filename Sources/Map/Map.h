@@ -1,34 +1,28 @@
-/*
-* Glazzer
-*/
-
 #ifndef Map_h_
 #define Map_h_
 
-#include "Sources/Utils/Global.hpp"
+#include "Sources/Utils/Globals.h"
 
-class Object;
-class Mario;
+class Unit;
 
 
-struct TileInfo
+struct Tile
 {
-    TileInfo() = default;
+    Tile() = default;
 
     sf::Uint32 ID = 0;
-    Position TextureRect;
-    Position PositionOnMap;
-    sf::Sprite Sprite;
+    sf::Vector2<int> TextureRect;
+    sf::Vector2<float> Position;
 };
 
-struct ObjectInfo
+struct GridObject
 {
-    ObjectInfo() = default;
+    GridObject() = default;
 
-    Position PositionOnMap;
     sf::Uint32 Width = 0;
     sf::Uint32 Height = 0;
-    ObjectType Type;
+    ObjectType Type = ObjectType::None;
+    sf::Vector2<float> Position;
 };
 
 class Map
@@ -38,21 +32,23 @@ public:
     ~Map();
 
     void Initialization(sf::Uint32 width, sf::Uint32 height, sf::Uint32 tileWidth, sf::Uint32 tileHeight);
-    void AddTile(const TileInfo& tile) { _Tiles.push_back(tile); }
-    void AddObjectInfo(const ObjectInfo& object) { _ObjectInfos.push_back(object); }
 
     sf::Uint32 GetWidth() { return _Width; }
     sf::Uint32 GetHeight() { return _Height; }
     sf::Uint32 GetTileWidth() { return _TileWidth; }
     sf::Uint32 GetTileHeight() { return _TileHeight; }
-    std::vector<TileInfo>& GetTiles() { return _Tiles; }
 
-    void CreateObjects();
-    std::vector<ObjectInfo> GetObject(ObjectType type);
-    std::vector<ObjectInfo> GetObject() { return _ObjectInfos; }
-
-    void SetCameraOffsetX(float value) { _CameraOffsetX = value; }
+    void SetCameraOffsetX(float offsetX) { _CameraOffsetX = offsetX; }
     float GetCameraOffsetX() const { return _CameraOffsetX; }
+
+    void AddTile(Tile* tile) { _Tiles.push_back(tile); }
+    std::vector<Tile*> GetTiles() { return _Tiles; }
+
+    void AddGridObject(GridObject* object, sf::Vector2<int> position);
+    GridObject* GetGridObject(int x, int y) { return _GridObjects[x][y]; }
+
+    void CreateUnits();
+    std::vector<Unit*> GetUnits() { return _Units; }
 
     void Draw(sf::RenderTarget* target, float diff);
 
@@ -62,10 +58,10 @@ private:
     sf::Uint32 _TileWidth;
     sf::Uint32 _TileHeight;
     float _CameraOffsetX;
-    std::vector<TileInfo> _Tiles;
-    std::vector<ObjectInfo> _ObjectInfos;
-    std::vector<Object*> _Objects;
     sf::Texture _Texture;
+    std::vector<Tile*> _Tiles;
+    GridObject*** _GridObjects;
+    std::vector<Unit*> _Units;
 };
 
 #endif // !Map_h_

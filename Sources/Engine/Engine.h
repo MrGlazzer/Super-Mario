@@ -1,11 +1,7 @@
-/*
-* Glazzer
-*/
-
 #ifndef Engine_h_
 #define Engine_h_
 
-#include "Sources/Utils/Global.hpp"
+#include "Sources/Utils/Globals.h"
 
 class Map;
 

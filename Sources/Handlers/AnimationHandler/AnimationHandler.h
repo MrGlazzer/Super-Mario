@@ -1,29 +1,25 @@
-/*
-* Glazzer
-*/
-
 #ifndef AnimationHandler_h_
 #define AnimationHandler_h_
 
-#include "Sources/Utils/Global.hpp"
+#include "Sources/Utils/Globals.h"
 
 
 enum class AnimationType
 {
-    ANIMATION_NONE                      = 0,
-    ANIMATION_IDLE,
-    ANIMATION_WALK,
-    ANIMATION_RUN,
-    ANIMATION_JUMP,
-    ANIMATION_DEATH,
-    ANIMATION_BRAKE
+    None,
+    Idle,
+    Walk,
+    Run,
+    Jump,
+    Death,
+    Sliding
 };
 
 struct Animation
 {
     Animation() = default;
 
-    void Draw(sf::RenderTarget* target, float diff, Position position, bool isFlipped);
+    void Draw(sf::RenderTarget* target, float diff, sf::Vector2<float> position, bool isFlipped);
 
     sf::Texture Texture;
     sf::Sprite Sprite;
@@ -35,48 +31,49 @@ private:
     float CurrentFrame = 0.f;
 };
 
-class AnimationHandler
+struct AnimationHandler
 {
 public:
     AnimationHandler();
     ~AnimationHandler();
 
-    void AddAnimation(const sf::Texture& texture, AnimationType type, Position begin, Position end, int width, int height, float speed, bool isNeedFlip);
+    void AddAnimation(const sf::Texture& texture, AnimationType type, sf::Vector2<int> begin, sf::Vector2<int> end, int width, int height, float speed, bool isNeedFlip);
 
-    void Update(sf::RenderTarget* target, float diff, Position position);
-
-    void Stop()
-    {
-        CurrentAnimation = AnimationType::ANIMATION_NONE;
-    }
+    void Update(sf::RenderTarget* target, float diff, sf::Vector2<float> position);
 
     void Idle()
     {
-        CurrentAnimation = AnimationType::ANIMATION_IDLE;
+        CurrentAnimation = AnimationType::Idle;
     }
 
     void Walk(bool isFlipped)
     {
         IsFlipped = isFlipped;
-        CurrentAnimation = AnimationType::ANIMATION_WALK;
+        CurrentAnimation = AnimationType::Walk;
     }
 
     void Run(bool isFlipped)
     {
         IsFlipped = isFlipped;
-        CurrentAnimation = AnimationType::ANIMATION_RUN;
+        CurrentAnimation = AnimationType::Run;
     }
 
     void Jump(bool isFlipped)
     {
         IsFlipped = isFlipped;
-        CurrentAnimation = AnimationType::ANIMATION_JUMP;
+        CurrentAnimation = AnimationType::Jump;
+    }
+
+    void Sliding(bool isFlipped)
+    {
+        IsFlipped = isFlipped;
+        CurrentAnimation = AnimationType::Sliding;
     }
 
 private:
-    AnimationType CurrentAnimation = AnimationType::ANIMATION_NONE;
-    std::map<AnimationType, Animation> Animations;
-    bool IsFlipped = false;
+    AnimationType CurrentAnimation;
+    std::map<AnimationType, Animation*> Animations;
+    bool IsFlipped;
 };
 
 #endif // !AnimationHandler_h_
