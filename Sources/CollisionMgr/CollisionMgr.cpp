@@ -14,18 +14,18 @@ CollisionMgr* CollisionMgr::Instance()
 
 bool CollisionMgr::IsCollision(Map* map, const sf::Vector2<float>& source, std::set<ObjectType> types, sf::Uint32& collisionMask)
 {
-    if (!map)
-        return false;
+	if (!map)
+		return false;
 
-    auto cell_x = source.x / (float)CELL_SIZE;
-    auto cell_y = source.y / (float)CELL_SIZE;
+	auto cell_x = source.x / (float)CELL_SIZE;
+	auto cell_y = source.y / (float)CELL_SIZE;
 
-    for (sf::Uint8 i = 0; i < 4; ++i)
-    {
-        sf::Uint16 x = 0, y = 0;
+	for (sf::Uint8 i = 0; i < 4; ++i)
+	{
+		sf::Uint16 x = 0, y = 0;
 
-        switch (i)
-        {
+		switch (i)
+		{
 			case 0: //Top left cell
 			{
 				x = (sf::Uint16)floor(cell_x);
@@ -50,7 +50,7 @@ bool CollisionMgr::IsCollision(Map* map, const sf::Vector2<float>& source, std::
 				y = (sf::Uint16)ceil(cell_y);
 				break;
 			}
-        }
+		}
 
 		if (x < 0 || y < 0 || x > map->GetWidth() || y > map->GetHeight())
 			continue;
@@ -63,7 +63,7 @@ bool CollisionMgr::IsCollision(Map* map, const sf::Vector2<float>& source, std::
 
 			collisionMask |= 1 << (sf::Uint32)object->Type;
 		}
-    }
+	}
 
 	return collisionMask;
 }
