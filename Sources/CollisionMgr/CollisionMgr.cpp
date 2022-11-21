@@ -52,7 +52,7 @@ bool CollisionMgr::IsCollision(Map* map, const sf::Vector2<float>& source, std::
 			}
 		}
 
-		if (x < 0 || y < 0 || x > map->GetWidth() || y > map->GetHeight())
+		if (x < 0 || y < 0 || x > map->GetWidth() - 1 || y > map->GetHeight() - 1)
 			continue;
 
 		for (const auto& type : types)

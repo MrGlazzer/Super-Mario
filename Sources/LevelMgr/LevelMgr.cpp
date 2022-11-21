@@ -193,7 +193,7 @@ ObjectType LevelMgr::GetObjectType(const std::string& name)
     {
         return ObjectType::Pipe;
     }
-    else if (name == "object_pipe_default_teleport")
+    else if (name == "object_pipe_teleport")
     {
         return ObjectType::Pipe;
     }
